@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         id="WebApp_ID" version="2.5">
+    <welcome-file-list>
+        <welcome-file>login.jsp</welcome-file>
+    </welcome-file-list>
+
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>com.blackwings.crm.web.filter.EncodingFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>loginFilter</filter-name>
+        <filter-class>com.blackwings.crm.web.filter.LoginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>*.do</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>loginFilter</filter-name>
+        <url-pattern>*.do</url-pattern>
+        <url-pattern>*.jsp</url-pattern>
+    </filter-mapping>
+
+    <listener>
+        <listener-class>com.blackwings.crm.web.listener.DicListener</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>UserController</servlet-name>
+        <servlet-class>com.blackwings.crm.settings.web.controller.UserController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UserController</servlet-name>
+        <url-pattern>/settings/user/login.do</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ActivityController</servlet-name>
+        <servlet-class>com.blackwings.crm.workbench.web.controller.ActivityController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ActivityController</servlet-name>
+        <url-pattern>/workbench/activity/getUserList.do</url-pattern>
+        <url-pattern>/workbench/activity/save.do</url-pattern>
+        <url-pattern>/workbench/activity/search.do</url-pattern>
+        <url-pattern>/workbench/activity/delete.do</url-pattern>
+        <url-pattern>/workbench/activity/getUListAndActivityDetail.do</url-pattern>
+        <url-pattern>/workbench/activity/edit.do</url-pattern>
+        <url-pattern>/workbench/activity/detail.do</url-pattern>
+        <url-pattern>/workbench/activity/getDetailRemarks.do</url-pattern>
+        <url-pattern>/workbench/activity/editRemark.do</url-pattern>
+        <url-pattern>/workbench/activity/saveRemark.do</url-pattern>
+        <url-pattern>/workbench/activity/deleteRemark.do</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ClueController</servlet-name>
+        <servlet-class>com.blackwings.crm.workbench.web.controller.ClueController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ClueController</servlet-name>
+        <url-pattern>/workbench/clue/getUserList.do</url-pattern>
+        <url-pattern>/workbench/clue/saveClue.do</url-pattern>
+        <url-pattern>/workbench/clue/searchClue.do</url-pattern>
+        <url-pattern>/workbench/clue/detail.do</url-pattern>
+        <url-pattern>/workbench/clue/saveRemark.do</url-pattern>
+        <url-pattern>/workbench/clue/showRemarkList.do</url-pattern>
+        <url-pattern>/workbench/clue/updateRemark.do</url-pattern>
+        <url-pattern>/workbench/clue/deleteRemark.do</url-pattern>
+        <url-pattern>/workbench/clue/showUnbundActivityList.do</url-pattern>
+        <url-pattern>/workbench/clue/getRelationActivityList.do</url-pattern>
+        <url-pattern>/workbench/clue/createBundRelation.do</url-pattern>
+        <url-pattern>/workbench/clue/deleteRelationActivity.do</url-pattern>
+        <url-pattern>/workbench/clue/searchActivity.do</url-pattern>
+        <url-pattern>/workbench/clue/convert.do</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>TranController</servlet-name>
+        <servlet-class>com.blackwings.crm.workbench.web.controller.TranController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TranController</servlet-name>
+        <url-pattern>/workbench/transaction/createNewTransaction.do</url-pattern>
+        <url-pattern>/workbench/transaction/searchActivity.do</url-pattern>
+        <url-pattern>/workbench/transaction/searchContacts.do</url-pattern>
+        <url-pattern>/workbench/transaction/getCustomerName.do</url-pattern>
+    </servlet-mapping>
+
+</web-app>

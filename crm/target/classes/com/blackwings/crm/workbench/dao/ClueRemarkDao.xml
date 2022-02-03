@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blackwings.crm.workbench.dao.ClueRemarkDao">
+
+    <delete id="deleteRemark">
+        delete from tbl_clue_remark where id = #{id}
+    </delete>
+
+    <update id="updateRemark">
+        update tbl_clue_remark set
+            noteContent = #{noteContent},
+            editBy = #{editBy},
+            editTime = #{editTime},
+            editFlag = #{editFlag}
+        where id=#{id}
+
+    </update>
+
+    <select id="getRemarkList" resultType="ClueRemark">
+        select * from tbl_clue_remark where clueId = #{clueId} order by createTime desc
+    </select>
+
+    <insert id="saveClueRemark">
+        insert into tbl_clue_remark (
+            id,
+            noteContent,
+            createBy,
+            createTime,
+            editFlag,
+            clueId
+        ) values (
+            #{id},
+            #{noteContent},
+            #{createBy},
+            #{createTime},
+            #{editFlag},
+            #{clueId}
+        )
+    </insert>
+
+</mapper>
