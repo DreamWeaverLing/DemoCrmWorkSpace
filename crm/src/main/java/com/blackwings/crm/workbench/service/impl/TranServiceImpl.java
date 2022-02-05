@@ -77,4 +77,9 @@ public class TranServiceImpl implements TranService {
         return tran;
     }
 
+    public List<TranHistory> getTranHistory(String tranId) {
+        List<TranHistory> tranHistoryList = tranHistoryDao.getTranHistory(tranId);
+        return tranHistoryList;
+    }
+
 }

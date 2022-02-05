@@ -87,10 +87,54 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
                         }
                     }, 100);
                 });
+
+		// 刷新可能性
+		possibility()
+
+		// 关联阶段可能性
+		$("#stage").on("change",possibility)
+
+		// 刷新交易历史
+		getTranHistory()
+
 	});
-	
-	
-	
+
+	// 刷新可能性
+	function possibility(){
+		var stage = $("#stage").text()
+		possibilityByStage(stage)
+	}
+	function possibilityByStage(stage){
+		var json = ${applicationScope.Stage2Possibility};
+		$("#possibility").text(json[stage]);
+	}
+
+
+	// 交易历史
+	function getTranHistory(){
+		$.ajax({
+			type:"get",
+			dataType:"json",
+			data:{"tranId":"${tran.id}"},
+			url:"workbench/transaction/getTranHistory.do",
+			success:function (data){
+				var html = ""
+				$.each(data,function (i,n){
+					var possibility = ${applicationScope.Stage2Possibility}[n.stage]
+					html += '<tr>';
+					html += '	<td>'+n.stage+'</td>';
+					html += '	<td>'+n.money+'</td>';
+					html += '	<td>'+possibility+'</td>';
+					html += '	<td>'+n.expectedDate+'</td>';
+					html += '	<td>'+n.createTime+'</td>';
+					html += '	<td>'+n.createBy+'</td>';
+					html += '</tr>';
+				})
+				$("#tranHistoryTbody").html(html);
+			}
+		})
+	}
+
 </script>
 
 </head>
@@ -133,7 +177,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		-----------
 		<span class="glyphicon glyphicon-record mystage" data-toggle="popover" data-placement="bottom" data-content="因竞争丢失关闭"></span>
 		-----------
-		<span class="closingDate">2010-10-10</span>
+		<span class="closingDate">${tran.expectedDate}</span>
 	</div>
 	
 	<!-- 详细信息 -->
@@ -158,7 +202,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			<div style="width: 300px; color: gray;">客户名称</div>
 			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${tran.contactsId}&nbsp;</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">阶段</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${tran.stage}&nbsp;</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b id="stage">${tran.stage}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
@@ -166,7 +210,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			<div style="width: 300px; color: gray;">类型</div>
 			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${tran.type}&nbsp;</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">可能性</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>90</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b id="possibility">&nbsp;</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
@@ -281,8 +325,8 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<td>创建人</td>
 						</tr>
 					</thead>
-					<tbody>
-						<tr>
+					<tbody id="tranHistoryTbody">
+<%--						<tr>
 							<td>资质审查</td>
 							<td>5,000</td>
 							<td>10</td>
@@ -305,7 +349,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<td>2017-02-07</td>
 							<td>2017-02-09 10:10:10</td>
 							<td>zhangsan</td>
-						</tr>
+						</tr>--%>
 					</tbody>
 				</table>
 			</div>

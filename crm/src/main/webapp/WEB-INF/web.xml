@@ -91,6 +91,7 @@
         <url-pattern>/workbench/transaction/saveTransaction.do</url-pattern>
         <url-pattern>/workbench/transaction/searchTran.do</url-pattern>
         <url-pattern>/workbench/transaction/detail.do</url-pattern>
+        <url-pattern>/workbench/transaction/getTranHistory.do</url-pattern>
     </servlet-mapping>
 
 </web-app>

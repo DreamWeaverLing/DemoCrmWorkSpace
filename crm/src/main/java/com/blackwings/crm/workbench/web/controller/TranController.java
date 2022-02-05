@@ -11,6 +11,7 @@ import com.blackwings.crm.vo.PaginationVO;
 import com.blackwings.crm.workbench.domain.Activity;
 import com.blackwings.crm.workbench.domain.Contacts;
 import com.blackwings.crm.workbench.domain.Tran;
+import com.blackwings.crm.workbench.domain.TranHistory;
 import com.blackwings.crm.workbench.service.ActivityService;
 import com.blackwings.crm.workbench.service.ContactsService;
 import com.blackwings.crm.workbench.service.CustomerService;
@@ -47,7 +48,17 @@ public class TranController  extends HttpServlet {
             searchTran(request,response);
         } else if ("/workbench/transaction/detail.do".equals(servletPath)) {
             detail(request,response);
+        } else if ("/workbench/transaction/getTranHistory.do".equals(servletPath)) {
+            getTranHistory(request,response);
         }
+    }
+
+    private void getTranHistory(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("进入获取交易历史方法");
+        String tranId = request.getParameter("tranId");
+        TranService tranService = (TranService) ServiceFactory.getService(new TranServiceImpl());
+        List<TranHistory> tranHistoryList = tranService.getTranHistory(tranId);
+        PrintJson.printJsonObj(response,tranHistoryList);
     }
 
     private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
