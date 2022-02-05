@@ -13,4 +13,6 @@ public interface TranDao {
     int getTotal(Map map);
 
     Tran detail(String id);
+
+    int changeStage(Tran tran);
 }

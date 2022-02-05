@@ -82,4 +82,26 @@ public class TranServiceImpl implements TranService {
         return tranHistoryList;
     }
 
+    public boolean changeStage(Tran tran) {
+        boolean flag = true;
+        int count = tranDao.changeStage(tran);
+        if (count != 1){
+            flag = false;
+        }
+
+        TranHistory tranHistory = new TranHistory();
+        tranHistory.setId(UUIDUtil.getUUID());
+        tranHistory.setTranId(tran.getId());
+        tranHistory.setStage(tran.getStage());
+        tranHistory.setExpectedDate(tran.getExpectedDate());
+        tranHistory.setCreateBy(tran.getEditBy());
+        tranHistory.setCreateTime(DateTimeUtil.getSysTime());
+        tranHistory.setMoney(tran.getMoney());
+        int count2 = tranHistoryDao.save(tranHistory);
+        if (count2 != 1){
+            flag = false;
+        }
+        return flag;
+    }
+
 }

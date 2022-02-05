@@ -1,5 +1,6 @@
 package com.blackwings.crm.workbench.web.controller;
 
+import com.blackwings.crm.settings.domain.DicValue;
 import com.blackwings.crm.settings.domain.User;
 import com.blackwings.crm.settings.service.UserService;
 import com.blackwings.crm.settings.service.impl.UserServiceImpl;
@@ -20,6 +21,7 @@ import com.blackwings.crm.workbench.service.impl.ActivityServiceImpl;
 import com.blackwings.crm.workbench.service.impl.ContactsServiceImpl;
 import com.blackwings.crm.workbench.service.impl.CustomerServiceImpl;
 import com.blackwings.crm.workbench.service.impl.TranServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -50,7 +52,34 @@ public class TranController  extends HttpServlet {
             detail(request,response);
         } else if ("/workbench/transaction/getTranHistory.do".equals(servletPath)) {
             getTranHistory(request,response);
+        } else if ("/workbench/transaction/changeStage.do".equals(servletPath)) {
+            changeStage(request,response);
         }
+    }
+
+    private void changeStage(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("进入改变交易阶段方法");
+        String stage = request.getParameter("stage");
+        String id = request.getParameter("id");
+        String money = request.getParameter("money");
+        String expectedDate = request.getParameter("expectedDate");
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+        String editTime = DateTimeUtil.getSysTime();
+
+        Tran tran = new Tran();
+        tran.setId(id);
+        tran.setStage(stage);
+        tran.setMoney(money);
+        tran.setExpectedDate(expectedDate);
+        tran.setEditBy(editBy);
+        tran.setEditTime(editTime);
+
+        TranService tranService = (TranService) ServiceFactory.getService(new TranServiceImpl());
+        boolean success = tranService.changeStage(tran);
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("success",success);
+        map.put("tran",tran);
+        PrintJson.printJsonObj(response,map);
     }
 
     private void getTranHistory(HttpServletRequest request, HttpServletResponse response) {
@@ -65,8 +94,12 @@ public class TranController  extends HttpServlet {
         System.out.println("进入到跳转详细信息页方法");
         String id = request.getParameter("id");
         TranService tranService = (TranService) ServiceFactory.getService(new TranServiceImpl());
+        List<DicValue> stageListDic = (List<DicValue>) request.getServletContext().getAttribute("stage");
+        ObjectMapper om = new ObjectMapper();
+        String stageList = om.writeValueAsString(stageListDic);
         Tran tran = tranService.detail(id);
         request.setAttribute("tran",tran);
+        request.setAttribute("stageList",stageList);
         request.getRequestDispatcher("/workbench/transaction/detail.jsp").forward(request,response);
     }
 

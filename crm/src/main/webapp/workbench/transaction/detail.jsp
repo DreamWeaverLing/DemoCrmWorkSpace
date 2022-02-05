@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
 String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/";
 %>
@@ -65,8 +66,10 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		$(".myHref").mouseout(function(){
 			$(this).children("span").css("color","#E6E6E6");
 		});
-		
-		
+
+		// 阶段状态
+		$("#stageStatus").html(stageStatusVal("${tran.stage}"))
+
 		//阶段提示框
 		$(".mystage").popover({
             trigger:'manual',
@@ -135,6 +138,99 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		})
 	}
 
+	// 拼接阶段状态图标
+	function stageStatusVal(currentStage){
+		// 获取阶段列表
+		var stageList = ${requestScope.stageList};
+		// 获取阶段可能性对应关系
+		var json = ${applicationScope.Stage2Possibility};
+		// 获取当前阶段可能性
+		var possibility = json[currentStage];
+		var html = "";
+		html += "阶段&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+		// 若可能性为0
+		if (possibility == "0"){
+			var i = 0
+			// 前7个必为黑圈
+			for (i; i < stageList.length; i++){
+				if (json[stageList[i].text]!='0'){
+
+					html += '			<span class="glyphicon glyphicon-record mystage" data-toggle="popover" data-placement="bottom" data-content="'+stageList[i].text+'" onclick="changeStage(\''+stageList[i].value+'\')"></span>'
+					html += '-----------'
+				} else {
+					break;
+				}
+			}
+			// 后2个若与当前状态相符则为红叉，否则黑叉
+			for (i; i < stageList.length; i++){
+				if (currentStage == stageList[i].text){
+					html += '			<span class="glyphicon glyphicon-remove mystage" style="color: red;" data-toggle="popover" data-placement="bottom" data-content="'+stageList[i].text+'" onclick="changeStage(\''+stageList[i].value+'\')"></span>'
+					html += '-----------'
+				} else {
+					html += '			<span class="glyphicon glyphicon-remove mystage" data-toggle="popover" data-placement="bottom" data-content="'+stageList[i].text+'" onclick="changeStage(\''+stageList[i].value+'\')"></span>'
+					html += '-----------'
+				}
+			}
+		// 若可能性不为0
+		} else {
+			var i = 0;
+			// 遍历若未到当前可能性则为绿勾
+			for (i; i < stageList.length; i++) {
+				// 若达到则为绿点并结束遍历
+				if (currentStage == stageList[i].text){
+					html += '			<span class="glyphicon glyphicon-map-marker mystage" style="color: #90F790;" data-toggle="popover" data-placement="bottom" data-content="'+stageList[i].text+'" onclick="changeStage(\''+stageList[i].value+'\')"></span>'
+					html += '-----------'
+					break;
+				} else {
+					html += '			<span class="glyphicon glyphicon-ok-circle mystage" style="color: #90F790;" data-toggle="popover" data-placement="bottom" data-content="'+stageList[i].text+'" onclick="changeStage(\''+stageList[i].value+'\')"></span>'
+					html += '-----------'
+				}
+			}
+			i++
+			// 继续遍历若可能性不为0则为黑圈
+			for (i; i < stageList.length; i++) {
+				if (json[stageList[i].text]!='0'){
+					html += '			<span class="glyphicon glyphicon-record mystage" data-toggle="popover" data-placement="bottom" data-content="'+stageList[i].text+'" onclick="changeStage(\''+stageList[i].value+'\')"></span>'
+					html += '-----------'
+				} else {
+				// 后面为黑叉
+					html += '			<span class="glyphicon glyphicon-remove mystage" data-toggle="popover" data-placement="bottom" data-content="'+stageList[i].text+'" onclick="changeStage(\''+stageList[i].value+'\')"></span>'
+					html += '-----------'
+				}
+			}
+
+		}
+		html += "<span class=\"closingDate\">${tran.expectedDate}</span>";
+		return html;
+	}
+
+	// 点击切换交易阶段
+	function changeStage(stage){
+		$.ajax({
+			type:"post",
+			dataType:"json",
+			data:{
+				"stage":stage,
+				"id":"${tran.id}",
+				"money":"${tran.money}",
+				"expectedDate":"${tran.expectedDate}"
+			},
+			url:"workbench/transaction/changeStage.do",
+			success:function (data){
+				if (data.success){
+					$("#stageStatus").html(stageStatusVal(stage));
+					$("#stage").text(stage);
+					$("#editBy").text(data.tran.editBy+" ");
+					$("#editTime").text(data.tran.editTime+" ");
+					possibilityByStage(stage);
+					getTranHistory();
+				} else {
+					alert("切换阶段失败！")
+				}
+			}
+		})
+	}
+
 </script>
 
 </head>
@@ -157,9 +253,9 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 	</div>
 
 	<!-- 阶段状态 -->
-	<div style="position: relative; left: 40px; top: -50px;">
+	<div style="position: relative; left: 40px; top: -50px;" id="stageStatus">
 		阶段&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<span class="glyphicon glyphicon-ok-circle mystage" data-toggle="popover" data-placement="bottom" data-content="资质审查" style="color: #90F790;"></span>
+<%--		<span class="glyphicon glyphicon-ok-circle mystage" data-toggle="popover" data-placement="bottom" data-content="资质审查" style="color: #90F790;"></span>
 		-----------
 		<span class="glyphicon glyphicon-ok-circle mystage" data-toggle="popover" data-placement="bottom" data-content="需求分析" style="color: #90F790;"></span>
 		-----------
@@ -176,7 +272,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		<span class="glyphicon glyphicon-record mystage" data-toggle="popover" data-placement="bottom" data-content="丢失的线索"></span>
 		-----------
 		<span class="glyphicon glyphicon-record mystage" data-toggle="popover" data-placement="bottom" data-content="因竞争丢失关闭"></span>
-		-----------
+		-------------%>
 		<span class="closingDate">${tran.expectedDate}</span>
 	</div>
 	
@@ -234,7 +330,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 70px;">
 			<div style="width: 300px; color: gray;">修改者</div>
-			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${tran.editBy}&nbsp;&nbsp;</b><small style="font-size: 10px; color: gray;">${tran.editTime}</small></div>
+			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b id="editBy">${tran.editBy}&nbsp;&nbsp;</b><small style="font-size: 10px; color: gray;" id="editTime">${tran.editTime}</small></div>
 			<div style="height: 1px; width: 550px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 80px;">
