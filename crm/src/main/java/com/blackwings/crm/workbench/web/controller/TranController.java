@@ -54,7 +54,16 @@ public class TranController  extends HttpServlet {
             getTranHistory(request,response);
         } else if ("/workbench/transaction/changeStage.do".equals(servletPath)) {
             changeStage(request,response);
+        } else if ("/workbench/transaction/getEChartsData.do".equals(servletPath)) {
+            getEChartsData(request,response);
         }
+    }
+
+    private void getEChartsData(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("进入获取图表数据方法");
+        TranService tranService = (TranService) ServiceFactory.getService(new TranServiceImpl());
+        List list = tranService.getEChartsData();
+        PrintJson.printJsonObj(response,list);
     }
 
     private void changeStage(HttpServletRequest request, HttpServletResponse response) {

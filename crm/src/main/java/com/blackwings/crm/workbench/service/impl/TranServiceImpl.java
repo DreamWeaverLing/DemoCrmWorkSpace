@@ -104,4 +104,9 @@ public class TranServiceImpl implements TranService {
         return flag;
     }
 
+    public List getEChartsData() {
+        List list = tranHistoryDao.getEChartsData();
+        return list;
+    }
+
 }

@@ -8,4 +8,6 @@ public interface TranHistoryDao {
     int save(TranHistory tranHistory);
 
     List<TranHistory> getTranHistory(String tranId);
+
+    List getEChartsData();
 }
